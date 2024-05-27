@@ -1,0 +1,12 @@
+name: Change shell
+on: push
+jobs:
+  print:
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash          # シェルにBashを指定
+        run: echo "${SHELL}"
+      - shell: python        # シェルにPythonを指定
+        run: |
+          import os
+          print(os.environ['PATH'])

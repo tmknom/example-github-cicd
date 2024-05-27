@@ -1,0 +1,10 @@
+name: Conftest
+on: pull_request
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: | # ポリシーファイルのパスを指定し、Conftestでワークフローファイルを検証
+          docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" \
+          openpolicyagent/conftest test --policy policy/ .github/workflows/

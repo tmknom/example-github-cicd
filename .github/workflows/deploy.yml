@@ -1,0 +1,30 @@
+name: Deploy
+on: workflow_dispatch
+env:
+  ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ID }}:role/${{ secrets.ROLE_NAME }}
+  SESSION_NAME: gh-oidc-${{ github.run_id }}-${{ github.run_attempt }}
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4                      # チェックアウト
+      - uses: aws-actions/configure-aws-credentials@v4 # 一時クレデンシャルの取得
+        with:
+          role-to-assume: ${{ env.ROLE_ARN }}
+          role-session-name: ${{ env.SESSION_NAME }}
+          aws-region: ap-northeast-1
+      - uses: ./.github/actions/container-build/       # コンテナイメージのビルド
+        id: build
+        with:
+          ecr-repository-uri: ${{ vars.ECR_REPOSITORY_URI }}
+          dockerfile-path: docker/ecs/
+      - uses: ./.github/actions/container-deploy/      # コンテナのデプロイ
+        with:
+          ecs-cluster: ${{ vars.ECS_CLUSTER_NAME }}
+          ecs-service: ${{ vars.ECS_SERVICE_NAME }}
+          task-definition: ${{ vars.TASK_DEFINITION_NAME }}
+          container-name: ${{ vars.CONTAINER_NAME }}
+          container-image: ${{ steps.build.outputs.container-image }}

@@ -1,0 +1,10 @@
+changelog:
+  categories:
+    - title: Enhancement
+      labels:
+        - enhancement
+  exclude:           # リリースノートの除外設定
+    labels:          # 除外するラベル
+      - dependencies
+    authors:         # 除外するプルリクエスト作成者
+      - dependabot

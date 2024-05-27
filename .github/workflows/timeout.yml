@@ -1,0 +1,8 @@
+name: Timeout
+on: push
+jobs:
+  sleep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1     # ワークフローのタイムアウトを1分に設定
+    steps:
+      - run: sleep 120     # 2分（120秒）スリープさせる

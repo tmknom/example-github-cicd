@@ -1,0 +1,17 @@
+name: Sequential jobs
+on: push
+jobs:
+  first:                   # 依存ジョブがないので最初に実行される
+    runs-on: ubuntu-latest
+    steps:
+      - run: sleep 10 && echo "First job"
+  second:                  # firstジョブのあとに実行される
+    runs-on: ubuntu-latest
+    needs: [first]         # needsキーへ依存するfirstジョブのIDを指定
+    steps:
+      - run: sleep 10 && echo "Second job"
+  third:                   # secondジョブのあとに実行される
+    runs-on: ubuntu-latest
+    needs: [second]        # needsキーへ依存するsecondジョブのIDを指定
+    steps:
+      - run: sleep 10 && echo "Third job"

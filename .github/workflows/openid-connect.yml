@@ -1,0 +1,18 @@
+name: OpenID Connect
+on: push
+env: # AWSの認証アクションへ指定する入力パラメータを環境変数として定義
+  ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ID }}:role/${{ secrets.ROLE_NAME }}
+  SESSION_NAME: gh-oidc-${{ github.run_id }}-${{ github.run_attempt }}
+jobs:
+  connect:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write                                  # OIDCトークンの取得を許可
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4 # AWSの認証アクション
+        with:
+          role-to-assume: ${{ env.ROLE_ARN }}
+          role-session-name: ${{ env.SESSION_NAME }}
+          aws-region: ap-northeast-1
+      - run: aws iam list-users                        # 一時クレデンシャルの利用
+      - run: aws iam create-user --user-name invalid || true
