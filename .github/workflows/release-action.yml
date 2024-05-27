@@ -1,0 +1,26 @@
+name: Release action
+on:
+  workflow_dispatch:
+    inputs:
+      bump-level: # バージョニングスクリプトの引数として利用する
+        type: choice
+        options: [patch, minor, major]
+        required: true
+        description: Bump to patch or minor or major
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          USERNAME: github-actions[bot]
+          EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          BUMP_LEVEL: ${{ inputs.bump-level }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: | # バージョニングスクリプトを実行し、リリースノートを生成する
+          git config --global user.name "${USERNAME}"
+          git config --global user.email "${EMAIL}"
+          version="$(.github/scripts/bump.sh "${BUMP_LEVEL}")"
+          gh release create "${version}" --title "${version}" --generate-notes

@@ -1,0 +1,9 @@
+name: Continue on Error
+on: push
+jobs:
+  failure:
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1             # 終了ステータスがゼロ以外なので、エラーが発生する
+        continue-on-error: true # Continue on Errorが発生したエラーを握りつぶす
+      - run: echo "Success"     # 素知らぬ顔で実行され、ワークフローは正常終了する

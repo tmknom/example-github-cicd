@@ -1,0 +1,19 @@
+name: Auto patch merge
+on: pull_request
+jobs:
+  merge:
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: meta                           # 依存関係のメタデータを取得
+        uses: dependabot/fetch-metadata@v2 # 条件分岐でパッチバージョンかチェック
+      - if: ${{ steps.meta.outputs.update-type == 'version-update:semver-patch' }}
+        run: |
+          gh pr review "${GITHUB_HEAD_REF}" --approve
+          gh pr merge "${GITHUB_HEAD_REF}" --merge --auto

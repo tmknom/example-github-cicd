@@ -1,0 +1,11 @@
+name: Matrix
+on: push
+jobs:
+  print:
+    strategy:
+      matrix:                                             # マトリックスの定義
+        os: [ubuntu-latest, windows-latest, macos-latest] # osプロパティの定義
+    runs-on: ${{ matrix.os }}                             # osプロパティの参照
+    steps:
+      - run: echo "${RUNNER_OS}"
+        shell: bash

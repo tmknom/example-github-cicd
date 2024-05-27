@@ -1,0 +1,21 @@
+name: Artifacts
+on: push
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - run: date > date.txt               # アーティファクトの生成
+      - uses: actions/upload-artifact@v4   # アーティファクトのアップロード
+        with:
+          name: uploaded                   # アーティファクト名
+          path: date.txt                   # アップロード対象のパス
+          retention-days: 7                # アーティファクトの保存期間
+  download:
+    runs-on: ubuntu-latest
+    needs: [upload]                        # uploadジョブの実行を待つ
+    steps:
+      - uses: actions/download-artifact@v4 # アーティファクトのダウンロード
+        with:
+          name: uploaded                   # アーティファクト名
+          path: downloaded                 # ダウンロード先のパス
+      - run: cat downloaded/date.txt       # アーティファクトを標準出力

@@ -1,0 +1,36 @@
+name: Publish
+on:
+  workflow_dispatch:
+    inputs:
+      version:                            # ワークフロー起動時に指定するバージョン
+        type: string
+        required: true
+        description: バージョン（例：1.2.3）
+env:
+  IMAGE_NAME: gha-image                   # コンテナイメージ名
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write                     # GitHub Packagesへの書き込みを許可
+      contents: read                      # ソースコードのチェックアウトを許可
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3      # コンテナレジストリへのログイン
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/metadata-action@v5   # コンテナイメージのメタデータ生成
+        id: meta
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}},value=v${{ inputs.version }}
+            type=raw,value=latest
+      - uses: docker/build-push-action@v5 # コンテナイメージのビルドとプッシュ
+        with:
+          push: true
+          context: docker/example/
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

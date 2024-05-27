@@ -1,0 +1,9 @@
+name: JSON functions
+on: push
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "${CONTEXT}"
+        env:
+          CONTEXT: ${{ toJSON(github) }} # githubコンテキストをJSON文字列でダンプ

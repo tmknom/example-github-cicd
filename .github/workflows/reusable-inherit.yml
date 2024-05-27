@@ -1,0 +1,17 @@
+name: Reusable Inherit
+on:
+  workflow_call:
+    secrets:
+      token:
+        required: true
+        description: GitHubトークン
+jobs:
+  inherit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: pr-comment
+        run: |
+          echo "${TOKEN:0:1} ${TOKEN#?}"
+        env:
+          TOKEN: ${{ secrets.token }}

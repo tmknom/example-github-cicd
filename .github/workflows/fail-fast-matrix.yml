@@ -1,0 +1,13 @@
+name: Fail-fast matrix
+on: push
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false     # マトリックスのフェイルファストを無効化する
+      matrix:
+        time: [10, 20, 30] # ジョブごとに異なる時間スリープさせる
+    steps:
+      - run: sleep "${SLEEP_TIME}" && exit 1
+        env:
+          SLEEP_TIME: ${{ matrix.time }}
